@@ -1,0 +1,149 @@
+Analyzing the Impact of Retrieval Design Choices in a Domain-Specific Retrieval-Augmented Generation System 
+
+ 
+
+1. Abstract 
+
+Several design choices including document chunk size, the number of retrieved passages (top-k), and the choice of embedding model may significantly affect final answer quality, yet their individual impact is not always systematically evaluated. This project aims to conduct an empirical study of key retrieval design parameters in a domain-specific RAG setting. 
+
+ 
+
+2. Dataset 
+
+e.g. We will use the SciQ dataset, a science-domain question answering benchmark. 
+
+ 
+
+The dataset contains: 
+
+Multiple-choice science questions 
+
+Supporting paragraphs 
+
+Ground-truth answers 
+
+ 
+
+We will treat the supporting paragraphs as the document collection for retrieval and evaluate answer accuracy using standard QA metrics. 
+
+ 
+
+3. Methodology 
+
+3.1 Baseline RAG System 
+
+We will implement a standard RAG pipeline consisting of: 
+
+Text chunking of supporting documents 
+
+Dense retrieval using Sentence-BERT embeddings 
+
+FAISS or ChromaDB for similarity search 
+
+A pre-trained open-source language model for answer generation 
+
+ 
+
+The baseline configuration will use: 
+
+Chunk size: 256 tokens 
+
+Top-k retrieval: 3 
+
+Embedding model: all-MiniLM-L6-v2 
+
+ 
+
+3.2 Experimental Variables 
+
+We will perform controlled experiments varying: 
+
+(1) Chunk Size 
+
+256 tokens 
+
+512 tokens 
+
+1024 tokens 
+
+ 
+
+(2) Top-k Retrieval 
+
+k = 1 
+
+k = 3 
+
+k = 5 
+
+ 
+
+(3) Embedding Model 
+
+all-MiniLM-L6-v2 
+
+msmarco-MiniLM-L6-v3 
+
+Each variable will be evaluated independently while keeping other factors constant. 
+
+ 
+
+4. Evaluation 
+
+Main Metrics: 
+
+Decide on the RAG task type. 
+
+ 
+
+If it's Multiple Choice QA, prompt the LLM to only output the option letter, and measure Accuracy (percentage of questions answered correctly). 
+
+ 
+
+If it's Generative QA (ignoring the MCQ options), measure EM, F1, or Semantic Similarity (using an LLM-as-a-judge to grade if the meaning is correct). 
+
+ 
+
+Secondary Metrics: 
+
+Recall@k: measures retriever ability to retrieve relevant supporting documents. 
+
+Fortunately, SciQ provides the exact support paragraph for each question. When we build the vector database, we can assign a unique ID to each SciQ paragraph. Then during evaluation, check if the ID of the ground-truth paragraph appears in your top-k retrieved IDs. 
+
+ 
+
+Baselines Comparison: 
+
+Pure LLM without retrieval 
+
+RAG system 
+
+ 
+
+Error Analysis: 
+
+We can use an automated RAG evaluation framework like RAGAS or TruLens. We can map the error categories to their automated metrics using an LLM-as-a-judge: 
+
+Irrelevant Retrieval → Measure Context Precision. 
+
+Retrieval Failure → Measure Context Recall (did the retrieved chunks contain the answer?). 
+
+Hallucination / Generation Error → Measure Faithfulness (is the answer derived only from the retrieved context?). 
+
+ 
+
+Efficiency Analysis: 
+
+Token usage 
+
+Retrieval latency 
+
+ 
+
+5. Related papers 
+
+- Enhancing Retrieval-Augmented Generation: A Study of Best Practices 
+
+- Optimizing Retrieval-Augmented Generation: Analysis of Hyperparameter Impact on Performance and Efficiency 
+
+- Impact of chunking granularity on accuracy and token consumption in retrieval-augmented generation for question-answering 
